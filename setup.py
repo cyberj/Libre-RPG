@@ -6,7 +6,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "libre-rpg",
+    name = "Libre-RPG",
     version = "0.0.1",
     author = "Johan Charpentier",
     author_email = "cyberj@arcagenis.org",
