@@ -98,4 +98,4 @@ class D100(Dice):
 class Coin(Dice):
     faces = ["Heads", "Tails"]
     name = "Coin"
-
+    flip = Dice.roll

@@ -39,9 +39,10 @@ class TestDice(unittest.TestCase):
         self.assertEquals(str(dice), "D100 : %s" % result)
         dice = D20()
         result = int(dice)
-        dice = Coin()
-        self.assertRaises(TypeError, int, dice)
-        self.assertTrue(dice.result in ["Heads", "Tails"])
+        coin = Coin()
+        self.assertRaises(TypeError, int, coin)
+        self.assertTrue(coin.result in ["Heads", "Tails"])
+        result = coin.flip()
         result = D6.throw()
 
     def test_math(self):
