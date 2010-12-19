@@ -50,6 +50,9 @@ class Dice():
             raise TypeError("Result is not an Integer")
         return result
 
+    def __cmp__(self, other):
+        return cmp(int(self), other)
+
     def __radd__(self, other):
         return int(self) + other
 

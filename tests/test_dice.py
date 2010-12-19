@@ -49,13 +49,20 @@ class TestDice(unittest.TestCase):
         """
         for x in range(1000):
             result = 3 * D6() + 5
-            print(result)
             self.assertTrue(result <= 23)
             self.assertTrue(result >= 8)
 
         result = 3 * D6() + 5 + D100()
         result = D6() * D4() + 5 + D100() + D12()
         result = D6() * D4() + 5 + D100() + 2 * D12()
+
+        # Compare
+        self.assertTrue(D6() < Dice(faces=[15,16,17]))
+        self.assertFalse(D6() > Dice(faces=[15,16,17]))
+        self.assertTrue(1 < Dice(faces=[15,16,17]))
+        self.assertTrue(20 > Dice(faces=[15,16,17]))
+        self.assertFalse(1 > Dice(faces=[15,16,17]))
+        self.assertFalse(20 < Dice(faces=[15,16,17]))
 
 if __name__ == '__main__':
     unittest.main()
