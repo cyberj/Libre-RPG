@@ -50,6 +50,15 @@ class Dice():
             raise TypeError("Result is not an Integer")
         return result
 
+    def __radd__(self, other):
+        return int(self) + other
+
+    def __mul__(self, other):
+        return int(self) * other
+
+    def __rmul__(self, other):
+        return int(self) * other
+
 # Bunch of classic dices :
 class D2(Dice):
     faces = range(1,3)

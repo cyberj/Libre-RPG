@@ -12,6 +12,8 @@ class TestDice(unittest.TestCase):
         self.seq = range(10)
 
     def test_dice(self):
+        """Basic tests for Dice
+        """
         dice = Dice()
         self.assertRaises(Exception, dice.roll)
         dice.faces = [1, 1, 1, 1]
@@ -42,6 +44,18 @@ class TestDice(unittest.TestCase):
         self.assertTrue(dice.result in ["Heads", "Tails"])
         result = D6.throw()
 
+    def test_math(self):
+        """Try some math
+        """
+        for x in range(1000):
+            result = 3 * D6() + 5
+            print(result)
+            self.assertTrue(result <= 23)
+            self.assertTrue(result >= 8)
+
+        result = 3 * D6() + 5 + D100()
+        result = D6() * D4() + 5 + D100() + D12()
+        result = D6() * D4() + 5 + D100() + 2 * D12()
 
 if __name__ == '__main__':
     unittest.main()
