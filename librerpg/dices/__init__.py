@@ -1,5 +1,5 @@
-#!/usr/bin/python
 import random
+from copy import copy
 
 class Dice():
     """Represent simple dice
@@ -34,6 +34,13 @@ class Dice():
             raise Exception("No faces on this dice")
         self.result = random.choice(self.faces)
         return self.result
+
+    def clone(self):
+        """Clone dice for multiple throws
+        """
+        cloned = copy(self)
+        cloned.roll()
+        return cloned
 
     def __str__(self):
         text = self.name
