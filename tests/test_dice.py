@@ -57,6 +57,7 @@ class TestDice(unittest.TestCase):
         dices = [D6(), D6()]
         strdices = str(dices)
         expct = "[<D6 : %s>, <D6 : %s>]" % tuple(x.result for x in dices)
+        print strdices
         self.assertEquals(strdices, expct)
         dices = [Dice(faces=[1]), Dice(faces=[1])]
         strdices = str(dices)
@@ -103,7 +104,20 @@ class TestDice(unittest.TestCase):
         throw = Throw([dice, dice], mod=5)
         result = throw.total
         self.assertTrue(result == 45)
-
+        # Text throw
+        throw = Throw("2D6+3")
+        result = throw.total
+        self.assertTrue(result <= 15)
+        self.assertTrue(result >= 5)
+        throw = Throw("D20-3")
+        result = throw.total
+        self.assertTrue(result <= 17)
+        self.assertTrue(result > -3)
+        throw = Throw("D3")
+        result = throw.total
+        self.assertTrue(result <= 3)
+        self.assertTrue(result > 0)
+        self.assertRaises(ValueError, Throw, "Some Dice+4")
 
 class TestSystems(unittest.TestCase):
     """Test all librerpg.dices.systems

@@ -1,4 +1,5 @@
 import random
+import re
 from copy import copy
 
 class Dice():
@@ -100,8 +101,36 @@ class Throw():
         if isinstance(dices, Dice):
             # Simpledice
             self.raw_results = [dices]
-        if hasattr(dices, '__iter__'):
+        elif hasattr(dices, '__iter__'):
             self.raw_results = dices
+        elif isinstance(dices, str) or isinstance(dices, unicode):
+            dices = dices.upper()
+            pattern = r"(?P<nb>[0-9])*(?P<dice>D[0-9]+)"
+            pattern += r"(?P<neg>[\+\-]?)(?P<mod>[0-9]*)"
+            match = re.search(pattern, dices)
+            if not match:
+                raise ValueError("Wrong dice patern")
+            results = match.groupdict()
+
+            # Find dice
+            if results['dice'] in DICES.keys():
+                dice = DICES[results["dice"]]()
+            else:
+                faces = int(results['dice'][1:])
+                dice = Dice(faces=range(1,faces))
+
+            # Find number
+            nb = int(results['nb'] or 1)
+
+            # Find mod
+            tmod = int(results['mod'] or 0)
+            neg = results['neg'] or "+"
+            if neg == "-" and tmod != 0:
+                tmod = -tmod
+
+            # result
+            self.raw_results = [dice.clone() for x in range(nb)]
+            self.mod = tmod
 
         self.results = list(self.raw_results)
 
@@ -145,3 +174,15 @@ class Coin(Dice):
     faces = ["Heads", "Tails"]
     name = "Coin"
     flip = Dice.roll
+
+DICES = {
+    "D2" : D2,
+    "D4" : D4,
+    "D6" : D6,
+    "D8" : D8,
+    "D10" : D10,
+    "D12" : D12,
+    "D20" : D20,
+    "D100" : D100,
+    }
+
