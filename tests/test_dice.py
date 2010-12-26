@@ -9,9 +9,10 @@ from librerpg.dices.systems import BaseSystem, AbfSystem
 from librerpg.dices import rules
 
 class TestDice(unittest.TestCase):
-
+    """Test librerpg.dices.Dice class
+    """
     def setUp(self):
-        self.seq = range(10)
+        pass
 
     def test_dice(self):
         """Basic tests for Dice
@@ -47,6 +48,11 @@ class TestDice(unittest.TestCase):
         result = coin.flip()
         result = D6.throw()
 
+        # Test clone
+        adice = Dice(faces=range(100000))
+        anotherdice = adice.clone()
+        self.assertNotEquals(adice.result, anotherdice.result)
+
     def test_math(self):
         """Try some math
         """
@@ -72,7 +78,8 @@ class TestDice(unittest.TestCase):
         self.assertFalse(20 < Dice(faces=[15,16,17]))
 
 class TestSystems(unittest.TestCase):
-
+    """Test all librerpg.dices.systems
+    """
     def test_base(self):
         """Basic tests for Dice System
         """
@@ -99,7 +106,6 @@ class TestSystems(unittest.TestCase):
         system.dices = [Dice(faces=[1])]
         throw = system.throw()
         self.assertTrue(throw.fumble)
-
 
     def test_Abf(self):
         """Basic tests for Dice System
