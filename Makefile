@@ -36,6 +36,7 @@ sdist:
 	$(SETUP) sdist
 
 test: bin/nosetests
+	rm -f .coverage
 	$(SETUP) test --with-coverage --cover-package=librerpg
 
 xunit.xml: bin/nosetests $(SOURCES) $(TESTS)
