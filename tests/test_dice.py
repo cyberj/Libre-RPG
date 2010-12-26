@@ -5,7 +5,7 @@ import os
 sys.path[0:0] = [os.path.join(os.path.dirname(__file__), ".."),]
 
 from librerpg.dices import Dice, D2, D4, D6, D8, D10, D12, D20, D100, Coin
-from librerpg.dices.systems import BaseSystem
+from librerpg.dices.systems import BaseSystem, AbfSystem
 from librerpg.dices import rules
 
 class TestDice(unittest.TestCase):
@@ -100,6 +100,22 @@ class TestSystems(unittest.TestCase):
         throw = system.throw()
         self.assertTrue(throw.fumble)
 
+
+    def test_Abf(self):
+        """Basic tests for Dice System
+        """
+        system = AbfSystem()
+        # Fumble test
+        system.dices = [D2()]
+        throw = system.throw()
+        self.assertTrue(throw.fumble)
+        # OED test
+        system.dices = [Dice(faces=[97])]
+        total = system.simple_throw()
+        self.assertEquals(total, 4*97)
+        system.auto_oed = False
+        total = system.simple_throw()
+        self.assertEquals(total, 97)
 
 if __name__ == '__main__':
     unittest.main()
