@@ -60,7 +60,10 @@ class Dice():
         return int(self) * other
 
     def __rmul__(self, other):
-        return int(self) * other
+        result = 0
+        for dice in range(other):
+            result += self.roll()
+        return result
 
 # Bunch of classic dices :
 class D2(Dice):

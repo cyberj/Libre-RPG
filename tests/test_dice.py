@@ -48,10 +48,14 @@ class TestDice(unittest.TestCase):
     def test_math(self):
         """Try some math
         """
+        results = []
         for x in range(1000):
             result = 3 * D6() + 5
             self.assertTrue(result <= 23)
             self.assertTrue(result >= 8)
+            if result not in results:
+                results.append(result)
+        self.assertTrue(len(results) > 6)
 
         result = 3 * D6() + 5 + D100()
         result = D6() * D4() + 5 + D100() + D12()
