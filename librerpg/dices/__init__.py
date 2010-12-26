@@ -1,5 +1,5 @@
-#!/usr/bin/python
 import random
+from copy import copy
 
 class Dice():
     """Represent simple dice
@@ -35,6 +35,13 @@ class Dice():
         self.result = random.choice(self.faces)
         return self.result
 
+    def clone(self):
+        """Clone dice for multiple throws
+        """
+        cloned = copy(self)
+        cloned.roll()
+        return cloned
+
     def __str__(self):
         text = self.name
         if self.result:
@@ -60,7 +67,10 @@ class Dice():
         return int(self) * other
 
     def __rmul__(self, other):
-        return int(self) * other
+        result = 0
+        for dice in range(other):
+            result += self.roll()
+        return result
 
 # Bunch of classic dices :
 class D2(Dice):
