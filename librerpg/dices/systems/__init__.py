@@ -1,25 +1,5 @@
-from librerpg.dices import D100
+from librerpg.dices import D100, Throw
 from librerpg.dices import rules
-
-class Throw():
-    """A throw to manage multiple dices"""
-    results = []
-    raw_results = []
-    mod = 0
-    rules = []
-
-    @property
-    def total(self):
-        """Get total"""
-        return sum(self.results) + self.mod
-
-    def __init__(self, results):
-        """Initialize throw"""
-        self.raw_results = list(results)
-        self.results = results
-
-    def __int__(self):
-        return self.total
 
 class BaseSystem():
     """base DiceSystem"""

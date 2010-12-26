@@ -6,7 +6,7 @@ sys.path[0:0] = [os.path.join(os.path.dirname(__file__), ".."),]
 
 from librerpg.dices import Dice, D2, D4, D6, D8, D10, D12, D20, D100, Coin
 from librerpg.dices.systems import BaseSystem, AbfSystem
-from librerpg.dices import rules
+from librerpg.dices import rules, Throw
 
 class TestDice(unittest.TestCase):
     """Test librerpg.dices.Dice class
@@ -34,7 +34,7 @@ class TestDice(unittest.TestCase):
 
         # Various dices
         dice = D2()
-        self.assertEquals(str(dice), "D2")
+        self.assertTrue(str(dice).startswith("D2"))
         dice = D100()
         result = dice.roll()
         result2 = int(dice)
@@ -86,6 +86,24 @@ class TestDice(unittest.TestCase):
         self.assertTrue(20 > Dice(faces=[15,16,17]))
         self.assertFalse(1 > Dice(faces=[15,16,17]))
         self.assertFalse(20 < Dice(faces=[15,16,17]))
+
+    def test_throw(self):
+        """Test dice throws
+        """
+        # Dices throw
+        throw = Throw(D20(), mod=5)
+        self.assertEqual(throw.mod, 5)
+        self.assertEqual(throw.rawtotal + 5, throw.total)
+        result = throw.total
+        self.assertTrue(result <= 25)
+        self.assertTrue(result >= 5)
+        # Dice list
+        dice = D20()
+        dice.result = 20
+        throw = Throw([dice, dice], mod=5)
+        result = throw.total
+        self.assertTrue(result == 45)
+
 
 class TestSystems(unittest.TestCase):
     """Test all librerpg.dices.systems

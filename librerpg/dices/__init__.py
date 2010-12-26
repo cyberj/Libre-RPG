@@ -6,19 +6,20 @@ class Dice():
     """
     name = ""
     faces = []
-    critrange = []
     result = None
 
-    def __init__(self, faces=None, nbfaces=None, critrange=None, name=None):
+    def __init__(self, faces=None, nbfaces=None, name=None):
         """
         """
         self.faces = faces or self.faces
-        self.critrange = critrange or self.critrange
         self.name = name or self.name
 
         if not faces:
             if isinstance(nbfaces, int):
                 self.faces = range(1, nbfaces + 1 )
+
+        if self.faces:
+            self.roll()
 
     @classmethod
     def throw(cls, *args, **kwargs):
@@ -55,10 +56,7 @@ class Dice():
         return "<%s>" % self.__str__()
 
     def __int__(self):
-        if not self.result:
-            result = self.roll()
-        else:
-            result = self.result
+        result = self.result
         if not isinstance(result, int):
             raise TypeError("Result is not an Integer")
         return result
@@ -77,6 +75,38 @@ class Dice():
         for dice in range(other):
             result += self.roll()
         return result
+
+class Throw():
+    """A throw to manage multiple dices"""
+    results = []
+    raw_results = []
+    mod = 0
+    rules = []
+
+    @property
+    def rawtotal(self):
+        """Get total withour mods"""
+        return sum(self.results)
+
+    @property
+    def total(self):
+        """Get total"""
+        return self.rawtotal + self.mod
+
+    def __init__(self, dices, mod=None):
+        """Initialize throw"""
+        self.mod = mod or self.mod
+
+        if isinstance(dices, Dice):
+            # Simpledice
+            self.raw_results = [dices]
+        if hasattr(dices, '__iter__'):
+            self.raw_results = dices
+
+        self.results = list(self.raw_results)
+
+    def __int__(self):
+        return self.total
 
 # Bunch of classic dices :
 class D2(Dice):
