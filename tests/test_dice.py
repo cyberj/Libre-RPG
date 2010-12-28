@@ -53,6 +53,16 @@ class TestDice(unittest.TestCase):
         anotherdice = adice.clone()
         self.assertNotEquals(adice.result, anotherdice.result)
 
+        # Test repr
+        dices = [D6(), D6()]
+        strdices = str(dices)
+        expct = "[<D6 : %s>, <D6 : %s>]" % tuple(x.result for x in dices)
+        self.assertEquals(strdices, expct)
+        dices = [Dice(faces=[1]), Dice(faces=[1])]
+        strdices = str(dices)
+        expct = "[<Dice : %s>, <Dice : %s>]" % tuple(x.result for x in dices)
+        self.assertEquals(strdices, expct)
+
     def test_math(self):
         """Try some math
         """

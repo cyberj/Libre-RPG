@@ -43,10 +43,16 @@ class Dice():
         return cloned
 
     def __str__(self):
-        text = self.name
+        if self.name:
+            text = self.name
+        else:
+            text = "Dice"
         if self.result:
             text += " : %s" % self.result
         return text
+
+    def __repr__(self):
+        return "<%s>" % self.__str__()
 
     def __int__(self):
         if not self.result:
