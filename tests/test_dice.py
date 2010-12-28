@@ -5,7 +5,6 @@ import os
 sys.path[0:0] = [os.path.join(os.path.dirname(__file__), ".."),]
 
 from librerpg.dices import Dice, D2, D4, D6, D8, D10, D12, D20, D100, Coin
-from librerpg.dices.systems import BaseSystem, AbfSystem
 from librerpg.dices import rules, Throw
 
 class TestDice(unittest.TestCase):
@@ -57,7 +56,6 @@ class TestDice(unittest.TestCase):
         dices = [D6(), D6()]
         strdices = str(dices)
         expct = "[<D6 : %s>, <D6 : %s>]" % tuple(x.result for x in dices)
-        print strdices
         self.assertEquals(strdices, expct)
         dices = [Dice(faces=[1]), Dice(faces=[1])]
         strdices = str(dices)
@@ -88,7 +86,56 @@ class TestDice(unittest.TestCase):
         self.assertFalse(1 > Dice(faces=[15,16,17]))
         self.assertFalse(20 < Dice(faces=[15,16,17]))
 
-    def test_throw(self):
+class TestThrows(unittest.TestCase):
+    """Test librerpg.dices.Throws
+    """
+    class OEDThrow(Throw):
+        rules = [rules.OpenEndedDieRule(oed_limit=95)]
+        dices = [D100(faces=[97])]
+
+    def test_rules(self):
+        """Basic tests for Dice System
+        """
+        throw = Throw(D6())
+        # Normal test
+        result = throw.total
+        self.assertTrue(isinstance(result, int))
+
+        # Some math
+        self.assertNotEquals(result, 0)
+        self.assertTrue(result > 0)
+        self.assertTrue(result <= 6)
+
+        # Check random, dice must be independants
+        throw = Throw([D6() for x in range(20)])
+        dice_set = set([int(x) for x in throw.results])
+        self.assertTrue(len(dice_set) > 1)
+
+        # Check with rules
+        throw.rules = [rules.FumbleRule()]
+        throw.dices = [Dice(faces=[1])]
+        throw.reroll()
+        self.assertTrue(throw.fumble)
+        throw.dices = [Dice(faces=[3])]
+        throw.reroll()
+        self.assertFalse(throw.fumble)
+        throw.rules = [rules.FumbleRule(fumble_range=[3])]
+        throw.apply_rules()
+        self.assertTrue(throw.fumble)
+        # Direct test
+        throwtotal = self.OEDThrow.direct()
+        self.assertEquals(throwtotal, 4*97)
+        throw = self.OEDThrow()
+        self.assertEquals(throw.total, 4*97)
+        throw.rules[0].auto_oed = False
+        total = throw.reroll()
+        self.assertEquals(throw.total, 97)
+        # Empty
+        throw.rules.append(rules.Rule())
+        self.assertRaises(NotImplementedError, throw.reroll)
+
+
+    def test_basethrow(self):
         """Test dice throws
         """
         # Dices throw
@@ -114,56 +161,11 @@ class TestDice(unittest.TestCase):
         self.assertTrue(result <= 17)
         self.assertTrue(result > -3)
         throw = Throw("D3")
-        result = throw.total
+        result = int(throw)
         self.assertTrue(result <= 3)
         self.assertTrue(result > 0)
         self.assertRaises(ValueError, Throw, "Some Dice+4")
 
-class TestSystems(unittest.TestCase):
-    """Test all librerpg.dices.systems
-    """
-    def test_base(self):
-        """Basic tests for Dice System
-        """
-        system = BaseSystem()
-        system.dices = [D6()]
-        # Normal test
-        result = system.simple_throw()
-        self.assertTrue(isinstance(result, int))
-
-        # Some math
-        self.assertNotEquals(result, 0)
-        self.assertTrue(result > 0)
-        self.assertTrue(result <= 6)
-
-        # Check random, dice must be independants
-        system.dices = [D6() for x in range(10)]
-        throw = system.throw()
-        self.assertTrue(isinstance(throw.total, int))
-        dice_set = set([int(x) for x in throw.results])
-        self.assertTrue(len(dice_set) > 1)
-
-        # Check with rules
-        system.rules = [rules.fumble]
-        system.dices = [Dice(faces=[1])]
-        throw = system.throw()
-        self.assertTrue(throw.fumble)
-
-    def test_Abf(self):
-        """Basic tests for Dice System
-        """
-        system = AbfSystem()
-        # Fumble test
-        system.dices = [D2()]
-        throw = system.throw()
-        self.assertTrue(throw.fumble)
-        # OED test
-        system.dices = [Dice(faces=[97])]
-        total = system.simple_throw()
-        self.assertEquals(total, 4*97)
-        system.auto_oed = False
-        total = system.simple_throw()
-        self.assertEquals(total, 97)
 
 if __name__ == '__main__':
     unittest.main()

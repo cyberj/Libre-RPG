@@ -80,13 +80,14 @@ class Dice():
 class Throw():
     """A throw to manage multiple dices"""
     results = []
-    raw_results = []
+    dices = []
     mod = 0
     rules = []
 
     @property
     def rawtotal(self):
         """Get total withour mods"""
+        print self.results
         return sum(self.results)
 
     @property
@@ -94,48 +95,75 @@ class Throw():
         """Get total"""
         return self.rawtotal + self.mod
 
-    def __init__(self, dices, mod=None):
+    def apply_rules(self, reset=True):
+        """Apply rules
+        """
+        if reset:
+            self.results = list(self.dices)
+
+        for rule in self.rules:
+            rule.apply(self)
+
+    def reroll(self):
+        """Reroll all dices and apply rules if any
+        """
+        for x in self.dices:
+            x.roll()
+        self.apply_rules(reset=True)
+        return self.total
+
+    def __init__(self, dices=None, mod=None):
         """Initialize throw"""
         self.mod = mod or self.mod
 
-        if isinstance(dices, Dice):
-            # Simpledice
-            self.raw_results = [dices]
-        elif hasattr(dices, '__iter__'):
-            self.raw_results = dices
-        elif isinstance(dices, str) or isinstance(dices, unicode):
-            dices = dices.upper()
-            pattern = r"(?P<nb>[0-9])*(?P<dice>D[0-9]+)"
-            pattern += r"(?P<neg>[\+\-]?)(?P<mod>[0-9]*)"
-            match = re.search(pattern, dices)
-            if not match:
-                raise ValueError("Wrong dice patern")
-            results = match.groupdict()
+        if dices:
+            if isinstance(dices, Dice):
+                # Simpledice
+                self.dices = [dices]
+            elif hasattr(dices, '__iter__'):
+                self.dices = dices
+            elif isinstance(dices, str) or isinstance(dices, unicode):
+                dices = dices.upper()
+                pattern = r"(?P<nb>[0-9])*(?P<dice>D[0-9]+)"
+                pattern += r"(?P<neg>[\+\-]?)(?P<mod>[0-9]*)"
+                match = re.search(pattern, dices)
+                if not match:
+                    raise ValueError("Wrong dice patern")
+                results = match.groupdict()
 
-            # Find dice
-            if results['dice'] in DICES.keys():
-                dice = DICES[results["dice"]]()
-            else:
-                faces = int(results['dice'][1:])
-                dice = Dice(faces=range(1,faces))
+                # Find dice
+                if results['dice'] in DICES.keys():
+                    dice = DICES[results["dice"]]()
+                else:
+                    faces = int(results['dice'][1:])
+                    dice = Dice(faces=range(1,faces))
 
-            # Find number
-            nb = int(results['nb'] or 1)
+                # Find number
+                nb = int(results['nb'] or 1)
 
-            # Find mod
-            tmod = int(results['mod'] or 0)
-            neg = results['neg'] or "+"
-            if neg == "-" and tmod != 0:
-                tmod = -tmod
+                # Find mod
+                tmod = int(results['mod'] or 0)
+                neg = results['neg'] or "+"
+                if neg == "-" and tmod != 0:
+                    tmod = -tmod
 
-            # result
-            self.raw_results = [dice.clone() for x in range(nb)]
-            self.mod = tmod
+                # result
+                self.dices = [dice.clone() for x in range(nb)]
+                self.mod = tmod
 
-        self.results = list(self.raw_results)
+        self.results = list(self.dices)
+        self.apply_rules()
 
     def __int__(self):
         return self.total
+
+    @classmethod
+    def direct(cls, *args, **kwargs):
+        """Roll dice get direct result
+        """
+        throw = cls(*args, **kwargs)
+        return throw.total
+
 
 # Bunch of classic dices :
 class D2(Dice):
