@@ -134,6 +134,11 @@ class TestThrows(unittest.TestCase):
         throw.rules.append(rules.Rule())
         self.assertRaises(NotImplementedError, throw.reroll)
 
+        # Critic test
+        throw = Throw(Dice(faces=[20]))
+        throw.rules = [rules.CriticRule([20])]
+        throw.reroll()
+        self.assertEqual(throw.total, 40)
 
     def test_basethrow(self):
         """Test dice throws

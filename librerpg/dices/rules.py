@@ -47,3 +47,24 @@ class OpenEndedDieRule(Rule):
         throw.results = throw.results + throw.oed_results
 
         return bool(throw.oed_results)
+
+class CriticRule(Rule):
+    crit_range = []
+    coef = 2
+
+    def __init__(self, crit_range, coef=2):
+        self.crit_range = crit_range
+        self.coef = coef
+
+    def apply(self, throw):
+        """Apply Critic rule
+        """
+        crit_range = self.crit_range
+
+        throw.crit_results = []
+        for dice in throw.results:
+            if dice in crit_range:
+                dice.result = int(dice)*self.coef
+                dice.critic = True
+
+        return bool(throw.crit_results)
