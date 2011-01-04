@@ -87,7 +87,7 @@ class Throw():
     @property
     def rawtotal(self):
         """Get total withour mods"""
-        print self.results
+        # print self.results
         return sum(self.results)
 
     @property
